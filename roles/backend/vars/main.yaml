@@ -1,0 +1,5 @@
+node_package_name: nodejs20
+login_host: db.sharada.store
+DB_HOST: db.sharada.store
+app_location: /app
+component: backend

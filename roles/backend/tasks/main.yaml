@@ -1,0 +1,82 @@
+- name: install nodejs version 20
+  ansible.builtin.dnf:
+    name: "{{item}}"
+    state: present
+  loop:
+  - "{{node_package_name}}"
+  - mariadb105
+
+- name: Verify Node.js installation
+  ansible.builtin.command: node -v
+  register: node_version_output
+  changed_when: false
+
+- name: Print Node.js version
+  ansible.builtin.debug:
+    var: node_version_output.stdout
+
+- name: create expense user
+  ansible.builtin.user:
+    name: expense
+
+# - name: Create App directory
+#   ansible.builtin.file:
+#     path: /app
+#     state: directory
+
+# - name: download backend code
+#   ansible.builtin.get_url:
+#     url: https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
+#     dest: /tmp/backend.zip
+
+- name: run app pre-requisites
+  anisble.builtin.import_role:
+    name: common
+    tasks_from: pre-req-app
+
+# - name: unzip backend code
+#   ansible.builtin.unarchive:  
+#     src: /tmp/backend.zip
+#     dest: /app
+#     remote_src: yes
+#   changed_when: false
+
+- name: install npm dependencies
+  ansible.builtin.command: npm install
+  args:
+    chdir: /app
+  changed_when: false
+
+- name: copy backend service
+  ansible.builtin.template:
+    src: backend.service.j2
+    dest: /etc/systemd/system/backend.service
+- name: Ensure python3-pip is installed
+  ansible.builtin.dnf:
+    name: python3-pip
+    state: present
+  # become: yes
+- name: install python mysql dependencies
+  ansible.builtin.pip:
+    name:
+    - PyMySQL
+    - cryptography
+    executable: pip3.9 
+- name: import data into sql
+  community.mysql.mysql_db:
+    login_user: "root"
+    login_password: "{{login_password}}"
+    login_host: "{{login_host}}"
+    target: /app/schema/backend.sql
+    state: import
+    name: all
+
+- name: reload daemon for backend service
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
+- name: start & enable backend service  
+  ansible.builtin.service:
+    name: backend
+    state: started
+    enabled: true

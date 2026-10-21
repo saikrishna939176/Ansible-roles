@@ -1,0 +1,9 @@
+- name: configure Database
+  hosts: db
+  become: yes
+  vars_prompt:
+  - name: mysql_root_password
+    prompt: please enter Mysql root login_password
+    private: no
+  roles:
+  - db
