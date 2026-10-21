@@ -7,7 +7,6 @@
   #   private: no
   roles:
   - role: "{{component}}"
-    when: component== "db"
 
 #   - name: Prompt for MySQL root password
 #   ansible.builtin.pause:
