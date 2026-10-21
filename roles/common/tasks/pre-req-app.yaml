@@ -1,6 +1,6 @@
 - name: Delete app directory
   ansible.builtin.file:
-    path: "{{ app_locaiton}}"
+    path: "{{ app_locaiton }}"
     state: absent
   ignore_errors: true
 
