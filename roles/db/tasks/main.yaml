@@ -126,8 +126,8 @@
   no_log: false
   when: mysql_connection_timeout.failed is true
 - name: Copy SQL dump file to remote server   
-  ansible.builtin.copy: 
-    src: create.sql
+  ansible.builtin.template: 
+    src: sql.j2
     dest: /tmp/create.sql
 - name: Import SQL file into MySQL
   ansible.builtin.shell: >
