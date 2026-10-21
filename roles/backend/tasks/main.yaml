@@ -34,6 +34,11 @@
     name: common
     tasks_from: pre-req-app
 
+- name: Set the root password
+  anisble.builtin.import_role:
+    name: common
+    tasks_from: Password_Prompt
+
 # - name: unzip backend code
 #   ansible.builtin.unarchive:  
 #     src: /tmp/backend.zip
@@ -65,7 +70,7 @@
 - name: import data into sql
   community.mysql.mysql_db:
     login_user: "root"
-    login_password: "{{login_password}}"
+    login_password: "{{mysql_root_password}}"
     login_host: "{{login_host}}"
     target: /app/schema/backend.sql
     state: import

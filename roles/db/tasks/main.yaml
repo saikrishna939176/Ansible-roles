@@ -4,17 +4,22 @@
   ignore_errors: true
   changed_when: false
 
-- name: Prompt for MySQL root password
-  ansible.builtin.pause:
-    prompt: "Please enter MySQL root password"
-    echo: false
-  register: mysql_password_input
-  when: mysql_root_password is not defined
+# - name: Prompt for MySQL root password
+#   ansible.builtin.pause:
+#     prompt: "Please enter MySQL root password"
+#     echo: false
+#   register: mysql_password_input
+#   when: mysql_root_password is not defined
 
-- name: Set MySQL root password variable
-  ansible.builtin.set_fact:
-    mysql_root_password: "{{ mysql_password_input.user_input }}"
-  when: mysql_root_password is not defined
+# - name: Set MySQL root password variable
+#   ansible.builtin.set_fact:
+#     mysql_root_password: "{{ mysql_password_input.user_input }}"
+#   when: mysql_root_password is not defined
+
+- name: Set the root password
+  anisble.builtin.import_role:
+    name: common
+    tasks_from: Password_Prompt
 
 - name: print version info
   ansible.builtin.debug:
