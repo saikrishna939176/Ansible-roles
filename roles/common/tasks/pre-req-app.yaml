@@ -8,6 +8,7 @@
 - name: Create app directory
   ansible.builtin.file:
     path: "{{ app_location }}"
+    state: directory
 
 - name: download and extract code
   ansible.builtin.unarchive:
