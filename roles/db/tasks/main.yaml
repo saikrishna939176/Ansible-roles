@@ -17,7 +17,7 @@
 #   when: mysql_root_password is not defined
 
 - name: Set the root password
-  anisble.builtin.import_role:
+  ansible.builtin.import_role:
     name: common
     tasks_from: Password_Prompt
 
