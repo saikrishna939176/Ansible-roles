@@ -1,2 +1,2 @@
-login_host: db.sharada.store
+login_host: localhost
 login_user: "root"
