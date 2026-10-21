@@ -1,4 +1,4 @@
-- name: configure {{component}}
+- name: configure "{{component}}"
   hosts: localhost
   become: yes
   vars_prompt:
@@ -6,7 +6,7 @@
     prompt: please enter Mysql root login_password
     private: no
   roles:
-  - role: {{component}}
+  - role: "{{component}}"
     when: component== "db"
 
 #   - name: Prompt for MySQL root password
