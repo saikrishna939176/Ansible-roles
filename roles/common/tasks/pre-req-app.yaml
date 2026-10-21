@@ -12,6 +12,6 @@
 
 - name: download and extract code
   ansible.builtin.unarchive:
-    src: https://expense-builds.s3.us-east-1.amazonaws.com/expense-{{ Component }}-v2.zip
+    src: https://expense-builds.s3.us-east-1.amazonaws.com/expense-{{Component}}-v2.zip
     dest: "{{ app_location }}"
     remote_src: true
