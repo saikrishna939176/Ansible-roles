@@ -1,5 +1,5 @@
 - name: configure "{{component}}"
-  hosts: localhost
+  hosts: "{{component}}"
   become: yes
   # vars_prompt:
   # - name: mysql_root_password
