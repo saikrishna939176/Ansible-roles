@@ -1,0 +1,132 @@
+- name: check version is installed or Not
+  ansible.builtin.command: sudo mysqld --version
+  register: Version
+  ignore_errors: true
+  changed_when: false
+
+- name: Prompt for MySQL root password
+  ansible.builtin.pause:
+    prompt: "Please enter MySQL root password"
+    echo: false
+  register: mysql_password_input
+  when: mysql_root_password is not defined
+
+- name: Set MySQL root password variable
+  ansible.builtin.set_fact:
+    mysql_root_password: "{{ mysql_password_input.user_input }}"
+  when: mysql_root_password is not defined
+
+- name: print version info
+  ansible.builtin.debug:
+    msg: "{{Version}}"
+
+- name: install mysql-community
+  ansible.builtin.command: sudo dnf install -y https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
+  when: Version.rc != 0
+
+- name: import rpm
+  ansible.builtin.command: sudo rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2023
+  when: Version.rc != 0
+
+- name: install mysql-community
+  ansible.builtin.command: sudo dnf install -y mysql-community-server
+  when: Version.rc != 0
+
+- name: Run & enable mysql
+  ansible.builtin.service:
+    name: mysqld
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Ensure python3-pip is installed
+  ansible.builtin.dnf:
+    name: python3-pip
+    state: present
+  become: yes
+- name: install python mysql dependencies
+  ansible.builtin.pip:
+    name: 
+    - PyMySQL
+    - cryptography
+    executable: pip3.9
+
+# - name: check DB connection
+#   community.mysql.mysql_info:
+#     login_user: "root"
+#     login_password: "{{mysql_root_password}}"
+#     login_host: "{{ login_host }}"
+#     filter: version
+#     # remote_src: yes
+#   ignore_errors: true
+#   register: mysql_connection_timeout
+- name: Test MySQL login as a specific remote user
+  ansible.builtin.command: >
+    mysql -u {{ login_user }} -p'{{ mysql_root_password }}' -e "SELECT 1;"
+# Execute the command as the remote user specified below
+  # become_user: login_user
+  register: mysql_connection_timeout
+  ignore_errors: true
+  changed_when: false
+
+- name: print output
+  ansible.builtin.debug:
+    msg: "output {{mysql_connection_timeout}}"
+
+- name: capture root_password_before changing
+  ansible.builtin.command: sudo grep 'temporary password' /var/log/mysqld.log
+  register: temp_password
+  changed_when: false
+
+- name: Set password variable safely
+  ansible.builtin.set_fact:
+      # We target the stdout directly and extract everything after the final space
+    actual_password: "{{ temp_password.stdout | regex_findall('root@localhost:\\s*(\\S+)') | last | default('NOT_FOUND') }}"
+
+
+# - name: check password
+#   ansible.builtin.debug:
+#     msg: "matched"
+#   when: actual_password == mysql_root_password
+
+# - name: check password
+#   ansible.builtin.debug:
+#     msg: "Not matched"
+#   when: actual_password != mysql_root_password
+
+- name: print temp_password
+  ansible.builtin.debug:
+    msg: "{{actual_password}}"
+
+- name: Ensure pexpect is installed for the expect module
+  ansible.builtin.pip:
+    name: pexpect
+  become: true
+
+- name: Run mysql_secure_installation automatically
+  ansible.builtin.expect:
+    command: sudo mysql_secure_installation
+    responses:
+        # We append \n to simulate hitting the 'Enter' key
+        '(?i)password for user root': "{{ actual_password }}\n"
+        
+        # Simplified regex matches for subsequent prompts to prevent hanging
+        '(?i)press y\|y for yes': "No\n"
+        '(?i)new password:': "{{mysql_root_password}}\n"
+        '(?i)re-enter new password:': "{{mysql_root_password}}\n"
+        '(?i)remove anonymous users': "Y\n"
+        '(?i)disallow root login remotely': "Y\n"
+        '(?i)remove test database': "Y\n"
+        '(?i)reload privilege tables now': "Y\n"
+  no_log: false
+  when: mysql_connection_timeout.failed is true
+- name: Copy SQL dump file to remote server   
+  ansible.builtin.copy: 
+    src: create.sql
+    dest: /tmp/create.sql
+- name: Import SQL file into MySQL
+  ansible.builtin.shell: >
+    mysql -u {{ login_user }} -p'{{ mysql_root_password }}' < /tmp/create.sql
+  register: sql_import
+  changed_when: false
+  # when: mysql_connection_timeout.failed is true 
