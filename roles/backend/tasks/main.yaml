@@ -34,10 +34,10 @@
     name: common
     tasks_from: pre-req-app
 
-- name: Set the root password
-  ansible.builtin.import_role:
-    name: common
-    tasks_from: Password_Prompt
+# - name: Set the root password
+#   ansible.builtin.import_role:
+#     name: common
+#     tasks_from: Password_Prompt
 
 # - name: unzip backend code
 #   ansible.builtin.unarchive:  

@@ -1,6 +1,8 @@
 - name: configure "{{component}}"
   hosts: "{{component}}"
   become: yes
+  vars_files:
+  - Credentials.yaml
   # vars_prompt:
   # - name: mysql_root_password
   #   prompt: please enter Mysql root login_password
