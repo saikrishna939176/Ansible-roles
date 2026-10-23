@@ -35,6 +35,11 @@
     loop: "{{ ec2_instances.results | map(attribute='instances') | flatten }}"
     loop_control:
       label: "{{ item.public_ip_address }}"
+    register: ec2_public_ips
+
+  - name: Print stored IP addresses
+    ansible.builtin.debug:
+      var: ec2_public_ips
   # - name: Set DNS record in GoDaddy (v3 API syntax)
   #   ansible.builtin.uri:
   #       url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ item.0 }}"
@@ -51,4 +56,5 @@
   #           ttl: 600
   #       status_code: 200
   #     loop: "{{ record_name | zip(record_data) | list }}"
+
         
