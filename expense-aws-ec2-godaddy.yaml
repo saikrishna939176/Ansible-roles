@@ -8,7 +8,7 @@
   tasks:
   - name: create ec2_instance
     amazon.aws.ec2_instance:
-      instance_type: t2.micro
+      instance_type: t3.micro
       name: "{{item}}"
       security_group: "allow"
       image_id: ami-0bdc7d025135d7b49
