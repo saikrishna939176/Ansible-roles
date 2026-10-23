@@ -22,6 +22,9 @@
       - backend
       - frontend
     register: ec2_instances
+  - name: print output
+    ansible.builtin.debug:
+      msg: "{{ ec2_instances }}"
   # - name: Set DNS record in GoDaddy (v3 API syntax)
   #   ansible.builtin.uri:
   #       url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ item.0 }}"
