@@ -1,5 +1,5 @@
 - name: Install and Configure Postfix on Amazon Linux 2023
-  hosts: all
+  hosts: localhost
   become: true
   tasks:
     - name: Ensure Postfix and SASL dependencies are installed
