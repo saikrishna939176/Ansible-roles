@@ -1,0 +1,24 @@
+- name: Practice GoDaddy API Integration
+  hosts: localhost
+  gather_facts: false
+  
+  vars:
+    #godaddy_token: "{{ lookup('ansible.builtin.env', 'GODADDY_PAT') }}"
+    target_domain: "mytestpractice123.com"
+
+  tasks:
+    - name: Check domain availability using Personal Access Token
+      ansible.builtin.uri:
+        url: "https://godaddy.com{{ target_domain }}"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ godaddy_token }}"
+          Accept: "application/json"
+        status_code: 200
+      register: api_response
+
+    - name: Display the practice API results
+      ansible.builtin.debug:
+        msg: >
+          Domain: {{ api_response.json.domain }} 
+          Is Available? {{ api_response.json.available }}
