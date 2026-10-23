@@ -14,7 +14,7 @@
         - sg-060eb715b5128a569
       image_id: "ami-0bdc7d025135d7b49"
       region: us-east-1
-      key_name: "openvpn"
+      key_name: "key"
       tags:
         Name: "{{item}}"
     loop:
