@@ -13,7 +13,7 @@
   - name: create ec2_instance
     amazon.aws.ec2_instance:
       instance_type: t3.micro
-      state: present
+      state: absent
       name: "{{item}}"
       security_groups:
         - sg-060eb715b5128a569
