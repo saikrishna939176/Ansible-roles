@@ -1,0 +1,38 @@
+- name: create aws ec2 & configure godaddy dns record
+  hosts: localhost
+  gather_facts: false
+  vars:
+    godaddy_pat: "gd_pat_UetkT8lL8Coo7nM0LdCkgDqqluBaEMed0lmExAiOluv_66ed2b54" 
+    domain: "sharada.store"
+    record_type: "A"
+  tasks:
+  - name: create ec2_instance
+    amazon.aws.ec2_instance:
+      instance_type: t2.micro
+      name: "{{item}}"
+      security_group: "allow"
+      image_id: ami-0bdc7d025135d7b49
+      key_name: "openvpn"
+      tags:
+        Name: "{{item}}"
+    loop:
+      - db
+      - backend
+      - frontend
+    register: ec2_instances
+  # - name: Set DNS record in GoDaddy (v3 API syntax)
+  #   ansible.builtin.uri:
+  #       url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ item.0 }}"
+  #       method: PUT
+  #       headers:
+  #         # Use Bearer instead of sso-key
+  #         Authorization: "Bearer {{ godaddy_pat }}"
+  #         Accept: "application/json"
+  #         Content-Type: "application/json"
+  #       body_format: json
+  #       body:
+  #         - data: "{{ item.1 }}"
+  #           ttl: 600
+  #       status_code: 200
+  #     loop: "{{ record_name | zip(record_data) | list }}"
+        
