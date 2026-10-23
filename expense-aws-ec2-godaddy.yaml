@@ -46,7 +46,7 @@
   - name: Set DNS record in GoDaddy (v3 API syntax)
     ansible.builtin.uri:
         url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ item.0 }}"
-        method: PUT
+        method: DELETE
         headers:
           # Use Bearer instead of sso-key
           Authorization: "Bearer {{ godaddy_pat }}"
