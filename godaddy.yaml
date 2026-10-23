@@ -1,19 +1,39 @@
-  - name: Create DNS Record via Modern GoDaddy v3 API
-    ansible.builtin.uri:
-      # ✅ HARDCODED FIX: Points strictly to the developer gateway path with no variables
-      url: "https://godaddy.com"
-      method: POST
-      body_format: json
-      body:
-        name: "test"
-        type: "A"
-        data: "192.0.2.1"
-        ttl: 3600
-      headers:
-        Authorization: "Bearer {{ godaddy_token }}"
-        Accept: "application/json"
-        Content-Type: "application/json"
-        User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-      status_code: 
-        - 201
-    register: dns_response
+- name: Automate GoDaddy DNS Record Creation
+  hosts: localhost
+  gather_facts: false
+
+  # vars:
+  #   # 🌐 IMPORTANT: Replace this with a domain you actively own inside your GoDaddy account
+  #   target_domain: "sharada.store"
+  #   dns_record_name: "test"
+  #   dns_record_type: "A"
+  #   dns_record_value: "192.0.2.1"
+  #   dns_record_ttl: 3600
+
+  vars_files:
+    - godaddy_vault.yaml
+
+  tasks:
+    - name: Create DNS Record via Modern GoDaddy v3 API
+      ansible.builtin.uri:
+        # ✅ HARDCODED FIX: Points strictly to the developer gateway path with no variables
+        url: "https://godaddy.com"
+        method: POST
+        body_format: json
+        body:
+          name: "test"
+          type: "A"
+          data: "192.0.2.1"
+          ttl: 3600
+        headers:
+          Authorization: "Bearer {{ godaddy_token }}"
+          Accept: "application/json"
+          Content-Type: "application/json"
+          User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        status_code: 
+          - 201
+      register: dns_response
+
+    - name: Print success confirmation
+      ansible.builtin.debug:
+        msg: "DNS Record successfully added to your domain zone!"
