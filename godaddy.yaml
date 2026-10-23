@@ -1,27 +1,34 @@
+---
 - name: Practice GoDaddy API Integration
   hosts: localhost
   gather_facts: false
-  
+
   vars:
-    #godaddy_token: "{{ lookup('ansible.builtin.env', 'GODADDY_PAT') }}"
     target_domain: "sharada.store"
 
   vars_files:
-  - godaddy_vault.yaml
+    - godaddy_vault.yaml
 
   tasks:
-    - name: Check domain availability using Personal Access Token
+    - name: Check domain availability using modern Domains v3 API
       ansible.builtin.uri:
-        url: "https://godaddy.com{{ target_domain }}"
-        method: GET
+        # ✅ Pointing to the modern stateless v3 endpoint
+        url: "https://api.godaddy.com/v3/domains/check-availability"
+        method: POST
+        body_format: json
+        # ✅ Domains v3 accepts the domain string within the JSON body
+        body:
+          domain: "{{ target_domain }}"
         headers:
+          # ✅ Uses the token from your godaddy_vault.yaml file
           Authorization: "Bearer {{ godaddy_token }}"
           Accept: "application/json"
+          User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         status_code: 200
       register: api_response
 
     - name: Display the practice API results
       ansible.builtin.debug:
         msg: >
-          Domain: {{ api_response.json.domain }} 
+          Domain: {{ api_response.json.domain }}
           Is Available? {{ api_response.json.available }}
