@@ -5,7 +5,7 @@
     godaddy_pat: "gd_pat_UetkT8lL8Coo7nM0LdCkgDqqluBaEMed0lmExAiOluv_66ed2b54" 
     domain: "sharada.store"
     record_type: "A"
-    record_name: "www"
+    record_name: "db"
     record_data: "192.0.2.1"
   tasks:
     - name: Set DNS record in GoDaddy (v3 API syntax)
