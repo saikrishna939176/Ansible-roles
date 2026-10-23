@@ -5,12 +5,18 @@
     godaddy_pat: "gd_pat_UetkT8lL8Coo7nM0LdCkgDqqluBaEMed0lmExAiOluv_66ed2b54" 
     domain: "sharada.store"
     record_type: "A"
-    record_name: "db"
-    record_data: "192.0.2.1"
+    record_name: 
+    - db
+    - backend
+    - frontend
+    record_data:
+    - "1.2.3.4"
+    - "1.2.3.6"
+    - "1.2.3.7"
   tasks:
     - name: Set DNS record in GoDaddy (v3 API syntax)
       ansible.builtin.uri:
-        url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ record_name }}"
+        url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ item.0 }}"
         method: PUT
         headers:
           # Use Bearer instead of sso-key
@@ -19,6 +25,8 @@
           Content-Type: "application/json"
         body_format: json
         body:
-          - data: "{{ record_data }}"
+          - data: "{{ item.1 }}"
             ttl: 600
         status_code: 200
+      loop: "{{ record_name | zip(record_data) | list }}"
+        
