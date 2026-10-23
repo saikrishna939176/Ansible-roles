@@ -13,6 +13,7 @@
   - name: create ec2_instance
     amazon.aws.ec2_instance:
       instance_type: t3.micro
+      state: present
       name: "{{item}}"
       security_groups:
         - sg-060eb715b5128a569
@@ -33,7 +34,7 @@
       msg: "{{ item }}"
     loop:
     - "{{ec2_instances.results.public_ip_address}}"
-    
+
   # - name: Set DNS record in GoDaddy (v3 API syntax)
   #   ansible.builtin.uri:
   #       url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ item.0 }}"
