@@ -16,7 +16,7 @@
   tasks:
     - name: Create or Update DNS Record via GoDaddy v3 API
       ansible.builtin.uri:
-        url: "https://api.godaddy.com/v3/domains/{{ target_domain }}/dns/records"
+        url: "https://api.godaddy.com/v3/domains/zones/{{ target_domain }}/dns/records"
         method: PUT
         body_format: json
         # ✅ GoDaddy takes an array of record blocks
