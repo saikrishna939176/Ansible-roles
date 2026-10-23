@@ -55,7 +55,6 @@
         body_format: json
         body:
           - data: "{{ item.1 }}"
-            ovwerride: true
             ttl: 600
         status_code: 200
     loop: "{{ instances | zip(ec2_private_ips) | list }}"
