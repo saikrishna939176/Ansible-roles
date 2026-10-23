@@ -36,7 +36,9 @@
     loop: "{{ ec2_instances.results | map(attribute='instances') | flatten }}"
     loop_control:
       label: "{{ item.public_ip_address }}"
-
+  - name: Store EC2 public IP addresses
+    ansible.builtin.set_fact:
+      ec2_public_ips: "{{ ec2_instances.results | map(attribute='instances') | flatten | map(attribute='public_ip_address') | list }}"
 
   - name: Print stored IP addresses
     ansible.builtin.debug:
