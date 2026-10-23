@@ -11,7 +11,7 @@
       instance_type: t3.micro
       name: "{{item}}"
       security_group:
-        - Allow
+        - sgr-064ac4c57838023d0
       image_id: "ami-0bdc7d025135d7b49"
       region: us-east-1
       key_name: "openvpn"
