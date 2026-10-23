@@ -10,7 +10,7 @@
     amazon.aws.ec2_instance:
       instance_type: t3.micro
       name: "{{item}}"
-      security_group:
+      security_groups:
         - sg-060eb715b5128a569
       image_id: "ami-0bdc7d025135d7b49"
       region: us-east-1
