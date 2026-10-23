@@ -5,6 +5,10 @@
     godaddy_pat: "gd_pat_UetkT8lL8Coo7nM0LdCkgDqqluBaEMed0lmExAiOluv_66ed2b54" 
     domain: "sharada.store"
     record_type: "A"
+    instances:
+      - db
+      - backend
+      - frontend
   tasks:
   - name: create ec2_instance
     amazon.aws.ec2_instance:
@@ -18,13 +22,15 @@
       tags:
         Name: "{{item}}"
     loop:
-      - db
-      - backend
-      - frontend
+     - "{{ instances }}"
     register: ec2_instances
   - name: print output
     ansible.builtin.debug:
       msg: "{{ ec2_instances }}"
+
+  - name: print output
+    ansible.builtin.debug:
+      msg: "{{ ec2_instances.results | map(attribute='instances') | flatten | map(attribute='public_ip_address') | list }}"
   # - name: Set DNS record in GoDaddy (v3 API syntax)
   #   ansible.builtin.uri:
   #       url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ item.0 }}"
@@ -37,6 +43,7 @@
   #       body_format: json
   #       body:
   #         - data: "{{ item.1 }}"
+  #           ovwerride: true
   #           ttl: 600
   #       status_code: 200
   #     loop: "{{ record_name | zip(record_data) | list }}"
