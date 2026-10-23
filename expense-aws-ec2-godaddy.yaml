@@ -43,21 +43,20 @@
   - name: Print stored IP addresses
     ansible.builtin.debug:
       var: ec2_public_ips
-  # - name: Set DNS record in GoDaddy (v3 API syntax)
-  #   ansible.builtin.uri:
-  #       url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ item.0 }}"
-  #       method: PUT
-  #       headers:
-  #         # Use Bearer instead of sso-key
-  #         Authorization: "Bearer {{ godaddy_pat }}"
-  #         Accept: "application/json"
-  #         Content-Type: "application/json"
-  #       body_format: json
-  #       body:
-  #         - data: "{{ item.1 }}"
-  #           ovwerride: true
-  #           ttl: 600
-  #       status_code: 200
-  #     loop: "{{ record_name | zip(record_data) | list }}"
-
+  - name: Set DNS record in GoDaddy (v3 API syntax)
+    ansible.builtin.uri:
+        url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ item.0 }}"
+        method: PUT
+        headers:
+          # Use Bearer instead of sso-key
+          Authorization: "Bearer {{ godaddy_pat }}"
+          Accept: "application/json"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          - data: "{{ item.1 }}"
+            ovwerride: true
+            ttl: 600
+        status_code: 200
+    loop: "{{ instances | zip(ec2_public_ips) | list }}"
         
