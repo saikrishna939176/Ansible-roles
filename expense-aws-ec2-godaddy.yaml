@@ -31,8 +31,8 @@
 
   - name: print output
     ansible.builtin.debug:
-      msg: "Instance {{ item.1.tags.Name | default(item.0.item) }} - Public IP: {{ item.1.public_ip_address | default('No public IP assigned') }}"
-    loop: "{{ ec2_instances.results | subelements('instances') }}"
+      msg: "Instance {{ item.item }} - Public IP: {{ item.instances[0].public_ip_address | default('No public IP') }}"
+  loop: "{{ ec2_instances.results }}"
   # - name: Set DNS record in GoDaddy (v3 API syntax)
   #   ansible.builtin.uri:
   #       url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ item.0 }}"
