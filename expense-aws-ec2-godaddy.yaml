@@ -33,7 +33,7 @@
     ansible.builtin.debug:
       msg: 
         - "Instance Name: {{ item.item }}"
-        - "Public IP: {{ item.instance.public_ip_address }}"
+        - "Public IP: {{ item.instances.public_ip_address }}"
     loop: "{{ ec2_instances.results }}"
 
   # - name: Set DNS record in GoDaddy (v3 API syntax)
