@@ -12,7 +12,7 @@
   tasks:
     - name: Check domain availability using Personal Access Token
       ansible.builtin.uri:
-        url: "https://godaddy.com{{ target_domain }}"
+        url: "https://godaddy.com/{{ target_domain }}"
         method: GET
         headers:
           Authorization: "Bearer {{ godaddy_token }}"
