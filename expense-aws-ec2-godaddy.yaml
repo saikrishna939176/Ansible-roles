@@ -32,10 +32,11 @@
   - name: print output
     ansible.builtin.debug:
       msg: "{{ item.public_ip_address }}"
+    register: ec2_public_ips
     loop: "{{ ec2_instances.results | map(attribute='instances') | flatten }}"
     loop_control:
       label: "{{ item.public_ip_address }}"
-    register: ec2_public_ips
+
 
   - name: Print stored IP addresses
     ansible.builtin.debug:
