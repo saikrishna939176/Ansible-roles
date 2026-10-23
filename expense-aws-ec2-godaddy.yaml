@@ -22,7 +22,7 @@
       key_name: "key"
       tags:
         Name: "{{item}}"
-      state: running
+      state: "{{ ec2_state }}"
     loop: "{{ instances }}"
     register: ec2_instances
   - name: print output
