@@ -6,9 +6,9 @@
     domain: "sharada.store"
     record_type: "A"
     instances:
-      - db
-      - backend
-      - frontend
+    - db
+    - backend
+    - frontend
   tasks:
   - name: create ec2_instance
     amazon.aws.ec2_instance:
