@@ -1,39 +1,24 @@
-- name: Automate GoDaddy DNS Record Creation
+- name: Update GoDaddy DNS Record using PAT
   hosts: localhost
   gather_facts: false
-
-  # vars:
-  #   # 🌐 IMPORTANT: Replace this with a domain you actively own inside your GoDaddy account
-  #   target_domain: "sharada.store"
-  #   dns_record_name: "test"
-  #   dns_record_type: "A"
-  #   dns_record_value: "192.0.2.1"
-  #   dns_record_ttl: 3600
-
-  vars_files:
-    - godaddy_vault.yaml
-
+  vars:
+    godaddy_pat: "gd_pat_UetkT8lL8Coo7nM0LdCkgDqqluBaEMed0lmExAiOluv_66ed2b54" 
+    domain: "sharada.store"
+    record_type: "A"
+    record_name: "www"
+    record_data: "192.0.2.1"
   tasks:
-    - name: Create DNS Record via Modern GoDaddy v3 API
+    - name: Set DNS record in GoDaddy (v3 API syntax)
       ansible.builtin.uri:
-        # ✅ HARDCODED FIX: Points strictly to the developer gateway path with no variables
-        url: "https://godaddy.com"
-        method: POST
-        body_format: json
-        body:
-          name: "test"
-          type: "A"
-          data: "192.0.2.1"
-          ttl: 3600
+        url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ record_name }}"
+        method: PUT
         headers:
-          Authorization: "Bearer {{ godaddy_token }}"
+          # Use Bearer instead of sso-key
+          Authorization: "Bearer {{ godaddy_pat }}"
           Accept: "application/json"
           Content-Type: "application/json"
-          User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        status_code: 
-          - 201
-      register: dns_response
-
-    - name: Print success confirmation
-      ansible.builtin.debug:
-        msg: "DNS Record successfully added to your domain zone!"
+        body_format: json
+        body:
+          - data: "{{ record_data }}"
+            ttl: 600
+        status_code: 200
