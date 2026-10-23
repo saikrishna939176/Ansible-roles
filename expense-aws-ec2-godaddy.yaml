@@ -46,7 +46,7 @@
   - name: Set DNS record in GoDaddy (v3 API syntax)
     ansible.builtin.uri:
         url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ item.0 }}"
-        method: DELETE
+        method: PUT
         headers:
           # Use Bearer instead of sso-key
           Authorization: "Bearer {{ godaddy_pat }}"
@@ -56,6 +56,6 @@
         body:
           - data: "{{ item.1 }}"
             ttl: 600
-        status_code: 200
+        status_code: [200, 204]
     loop: "{{ instances | zip(ec2_private_ips) | list }}"
         
