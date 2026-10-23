@@ -30,6 +30,8 @@
 #     dest: /tmp/backend.zip
 
 - name: run app pre-requisites
+  tags:
+  - deployment
   ansible.builtin.import_role:
     name: common
     tasks_from: pre-req-app
@@ -47,6 +49,8 @@
 #   changed_when: false
 
 - name: install npm dependencies
+  tags:
+  - deployment
   ansible.builtin.command: npm install
   args:
     chdir: /app
@@ -83,7 +87,9 @@
     daemon_reload: true
 
 - name: start & enable backend service  
+  tags:
+  - deployment
   ansible.builtin.service:
     name: backend
-    state: started
+    state: restarted
     enabled: true
