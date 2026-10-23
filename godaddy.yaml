@@ -4,7 +4,7 @@
   
   vars:
     #godaddy_token: "{{ lookup('ansible.builtin.env', 'GODADDY_PAT') }}"
-    target_domain: "mytestpractice123.com"
+    target_domain: "sharada.store"
 
   vars_files:
   - godaddy_vault.yaml
