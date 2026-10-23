@@ -25,9 +25,9 @@
       state: running
     loop: "{{ instances }}"
     register: ec2_instances
-  # - name: print output
-  #   ansible.builtin.debug:
-  #     msg: "{{ ec2_instances }}"
+  - name: print output
+    ansible.builtin.debug:
+      msg: "{{ ec2_instances }}"
 
   - name: print output
     ansible.builtin.debug:
