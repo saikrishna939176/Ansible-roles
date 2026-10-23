@@ -31,18 +31,18 @@
 
   - name: print output
     ansible.builtin.debug:
-      msg: "{{ item.public_ip_address }}"
-    register: ec2_public_ips
+      msg: "{{ item.private_ip_address }}"
+    register: ec2_private_ips
     loop: "{{ ec2_instances.results | map(attribute='instances') | flatten }}"
     loop_control:
-      label: "{{ item.public_ip_address }}"
-  - name: Store EC2 public IP addresses
+      label: "{{ item.private_ip_address }}"
+  - name: Store EC2 private IP addresses
     ansible.builtin.set_fact:
-      ec2_public_ips: "{{ ec2_instances.results | map(attribute='instances') | flatten | map(attribute='public_ip_address') | list }}"
+      ec2_private_ips: "{{ ec2_instances.results | map(attribute='instances') | flatten | map(attribute='private_ip_address') | list }}"
 
   - name: Print stored IP addresses
     ansible.builtin.debug:
-      var: ec2_public_ips
+      var: ec2_private_ips
   - name: Set DNS record in GoDaddy (v3 API syntax)
     ansible.builtin.uri:
         url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/{{ record_type }}/{{ item.0 }}"
@@ -58,5 +58,5 @@
             ovwerride: true
             ttl: 600
         status_code: 200
-    loop: "{{ instances | zip(ec2_public_ips) | list }}"
+    loop: "{{ instances | zip(ec2_private_ips) | list }}"
         
