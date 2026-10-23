@@ -6,6 +6,9 @@
     #godaddy_token: "{{ lookup('ansible.builtin.env', 'GODADDY_PAT') }}"
     target_domain: "mytestpractice123.com"
 
+  vars_files:
+  - godaddy_vault.yaml
+
   tasks:
     - name: Check domain availability using Personal Access Token
       ansible.builtin.uri:
