@@ -1,34 +1,41 @@
----
-- name: Practice GoDaddy API Integration
+- name: Automate GoDaddy DNS Record Creation
   hosts: localhost
   gather_facts: false
 
   vars:
     target_domain: "sharada.store"
+    
+    dns_record_name: "test"          # Use "test" for test.sharada.store (or "@" for the root domain)
+    dns_record_type: "A"             # Record type (A, CNAME, TXT, MX etc.)
+    dns_record_value: "192.0.2.1"    # The IP address or target destination
+    dns_record_ttl: 600             # Time to Live in seconds (1 hour)
 
   vars_files:
     - godaddy_vault.yaml
 
   tasks:
-    - name: Check domain availability using modern Domains v3 API
+    - name: Create or Update DNS Record via GoDaddy v3 API
       ansible.builtin.uri:
-        # ✅ Pointing to the modern stateless v3 endpoint
-        url: "https://api.godaddy.com/v3/domains/check-availability"
-        method: POST
+        url: "https://api.godaddy.com/v3/domains/{{ target_domain }}/dns/records"
+        method: PUT
         body_format: json
-        # ✅ Domains v3 accepts the domain string within the JSON body
+        # ✅ GoDaddy takes an array of record blocks
         body:
-          domain: "{{ target_domain }}"
+          - name: "{{ dns_record_name }}"
+            type: "{{ dns_record_type }}"
+            data: "{{ dns_record_value }}"
+            ttl: "{{ dns_record_ttl | int }}"
         headers:
-          # ✅ Uses the token from your godaddy_vault.yaml file
           Authorization: "Bearer {{ godaddy_token }}"
           Accept: "application/json"
+          Content-Type: "application/json"
+          # 🛡️ Kept to bypass any Cloudflare edge filters
           User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        status_code: 200
-      register: api_response
+        status_code: 
+          - 200
+          - 204
+      register: dns_response
 
-    - name: Display the practice API results
+    - name: Print success confirmation
       ansible.builtin.debug:
-        msg: >
-          Domain: {{ api_response.json.domain }}
-          Is Available? {{ api_response.json.available }}
+        msg: "DNS Record for {{ dns_record_name }}.{{ target_domain }} successfully modified!"
