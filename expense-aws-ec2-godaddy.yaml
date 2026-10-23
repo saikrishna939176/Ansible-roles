@@ -16,7 +16,7 @@
       name: "{{item}}"
       security_groups:
         - sg-060eb715b5128a569
-      image_id: "ami-0bdc7d025135d7b49"
+      image_id: "ami-08c46876c64a927b8"
       region: us-east-1
       key_name: "key"
       tags:
